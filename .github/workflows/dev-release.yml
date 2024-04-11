@@ -13,7 +13,12 @@ jobs:
     test:
       runs-on: ubuntu-latest
       steps:
-        - run: |
+        - name: Checkout Actions
+          uses: actions/checkout@v3
+          with:
+            fetch-depth: 0
+        - name: Show Tree
+          run: |
             sudo apt-get install tree
             tree
 #   dev-release:
