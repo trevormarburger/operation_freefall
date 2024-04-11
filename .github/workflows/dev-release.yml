@@ -19,7 +19,7 @@ jobs:
             fetch-depth: 0
         - name: Show Tree
           run: |
-            sudo apt-get install tree
+            pwd
             tree
 #   dev-release:
 #     uses: ./.github/workflows/terraform.yml
