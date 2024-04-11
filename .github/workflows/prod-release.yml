@@ -1,0 +1,16 @@
+name: Prod Release
+
+on:
+  workflow_dispatch
+
+permissions:
+  actions: write
+  contents: write
+
+jobs:
+  prod-release:
+    uses: ./.github/workflows/terraform.yml
+    with:
+      environment: prod
+    secrets:
+      inherit
