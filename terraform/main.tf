@@ -15,7 +15,7 @@ resource "google_pubsub_topic" "my_topic" {
 
 resource "google_cloud_scheduler_job" "my_scheduler_job" {
   name        = "my-scheduler-job-${var.env}"
-  description = "My Cloud Scheduler job to trigger Cloud Function"
+  description = "Cloud Scheduler job to trigger Cloud Function for Operation Freefall."
   schedule    = "0 10 * * 1-5"
   time_zone    = "America/New_York"
 
