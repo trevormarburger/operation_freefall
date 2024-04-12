@@ -71,8 +71,7 @@ jobs:
         shell: bash
         run: |
           terraform init \
-            -backend-configure="" \
-            -backend-configure=""
+            -var 'environment=${{ inputs.environment }}'
 
       - name: Terraform Plan
         working-directory: terraform
