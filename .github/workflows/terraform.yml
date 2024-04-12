@@ -135,6 +135,8 @@ jobs:
         run: |
           av_api_key=$(gcloud secrets versions access 1 --project=tm-personal-proj-1 --secret="av_api_key")
           slack_webhook_url=$(gcloud secrets versions access 1 --project=tm-personal-proj-1 --secret="slack_webhook_url_${{ inputs.environment }}")
+          echo "::add-mask::$slack_webhook_url"
+          echo "::add-mask::$av_api_key"
           echo "TF_VAR_SLACK_WEBHOOK_URL=$slack_webhook_url" >> $GITHUB_ENV
           echo "TF_VAR_AV_API_KEY=$av_api_key" >> $GITHUB_ENV
 
@@ -149,7 +151,9 @@ jobs:
         shell: bash
         run: |
           terraform init \
-            -backend-config=""
+            -var 'env=${{ inputs.environment }}' \
+            -backend-config="bucket=state-bucket-20240412" \
+            -backend-config="prefix=terraform/state/${{ inputs.environment }}"
 
       - name: Terraform Apply
         working-directory: terraform
