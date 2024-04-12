@@ -3,10 +3,19 @@ resource "google_storage_bucket" "bucket" {
   location = "US"
 }
 
+data "archive_file" "function_archive" {
+  type        = "zip"
+  source_dir  = "${path.module}/../src"
+  output_path = "${path.root}/function.zip"
+}
+
 resource "google_storage_bucket_object" "archive" {
-  name   = "index.zip"
-  bucket = google_storage_bucket.bucket.name
-  source = "/home/runner/work/operation_freefall/operation_freefall/src/my_function.zip"
+  name                = format("%s#%s", var.bucket_archive_filepath, data.archive_file.function_archive.output_md5)
+  bucket              = var.bucket_name
+  source              = data.archive_file.function_archive.output_path
+  content_disposition = "attachment"
+  content_encoding    = "gzip"
+  content_type        = "application/zip"
 }
 
 resource "google_pubsub_topic" "my_topic" {
