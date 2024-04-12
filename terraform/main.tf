@@ -54,14 +54,9 @@ resource "google_cloudfunctions_function" "function" {
     event_type = "google.pubsub.topic.publish"
     resource   = google_pubsub_topic.my_topic.name
   }
+
+  depends_on = [
+    google_cloud_scheduler_job.my_scheduler_job,
+    google_storage_bucket_object.archive
+  ]
 }
-
-# # IAM entry for a single user to invoke the function
-# resource "google_cloudfunctions_function_iam_member" "invoker" {
-#   project        = google_cloudfunctions_function.function.project
-#   region         = google_cloudfunctions_function.function.region
-#   cloud_function = google_cloudfunctions_function.function.name
-
-#   role   = "roles/cloudfunctions.invoker"
-#   member = "user:myFunctionInvoker@example.com"
-# }
