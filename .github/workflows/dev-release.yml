@@ -13,12 +13,12 @@ jobs:
     test:
       runs-on: ubuntu-latest
       steps:
-#   dev-release:
-#     uses: ./.github/workflows/terraform.yml
-#     with:
-#       environment: dev
-#     secrets:
-#       inherit
+  dev-release:
+    uses: ./.github/workflows/terraform.yml
+    with:
+      environment: dev
+    secrets:
+      inherit
 
 #   approve-prod-deploy:
 #     environment: prod
