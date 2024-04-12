@@ -38,11 +38,25 @@ jobs:
         with:
           version: '>= 363.0.0'
 
-      - name: Use gcloud CLI
-        run: gcloud info
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0.2.1
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: false
+  
+      - name: Activate service account
+        working-directory: terraform
+        run: |
+          gcloud auth activate-service-account --key-file=$(pwd)/gcp_key.json
+  
+      - name: Verify authentication
+        run: gcloud auth list
+      # - name: Use gcloud CLI
+      #   run: gcloud info
 
-      - name: List gcloud Projects
-        run: gcloud projects list
+      # - name: List gcloud Projects
+      #   run: gcloud projects list
 
   #     - name: Connect to GCP Secrets Manager
   #       run: echo 1
