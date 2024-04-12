@@ -17,35 +17,35 @@ jobs:
       secrets:
         inherit
 
-        # approve-prod-deploy:
-        #     environment: prod
-        #     runs-on: ubuntu-latest
-        #     permissions:
-        #     contents: write
-        #     actions: write
-        #     needs: [dev-release]
-        #     steps:
-        #     - run: echo "Prod Deployment Approved"
-
-        #     - name: Checkout Actions
-        #         uses: actions/checkout@v3
-        #         with:
-        #         fetch-depth: 0
-
-        #     - name: Tag Prod Commit
-        #         id: tag-prod
-        #         uses: ./.github/actions/tag-commit
-        #         with:
-        #         tag-prefix: Prod-Release
-
-        #     - name: Trigger Prod Workflow
-        #         uses: actions/github-script@v6
-        #         if: github.ref == 'refs/heads/main'
-        #         with:
-        #         script: |
-        #             github.rest.actions.createWorkflowDispatch({
-        #             owner: context.repo.owner,
-        #             repo: context.repo.repo,
-        #             workflow_id: 'prod-release.yml',
-        #             ref: '${{ steps.tag-prod.outputs.tag}}',
-        #             })
+    approve-prod-deploy:
+      environment: prod
+      runs-on: ubuntu-latest
+      permissions:
+        contents: write
+        actions: write
+      needs: [dev-release]
+      steps:
+        - run: echo "Prod Deployment Approved"
+        
+        - name: Checkout Actions
+          uses: actions/checkout@v3
+          with:
+            fetch-depth: 0
+            
+        - name: Tag Prod Commit
+          id: tag-prod
+          uses: ./.github/actions/tag-commit
+          with:
+            tag-prefix: Prod-Release
+            
+        - name: Trigger Prod Workflow
+          uses: actions/github-script@v6
+          if: github.ref == 'refs/heads/main'
+          with:
+            script: |
+              github.rest.actions.createWorkflowDispatch({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                workflow_id: 'prod-release.yml',
+                ref: '${{ steps.tag-prod.outputs.tag}}',
+              })
