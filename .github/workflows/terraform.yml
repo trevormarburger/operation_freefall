@@ -33,15 +33,16 @@ jobs:
           base64 --decode base_key > gcp_key.json
           export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/gcp_key.json
 
-      - name: 'Set up Cloud SDK'
-        uses: 'google-github-actions/setup-gcloud@v2'
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
         with:
           version: '>= 363.0.0'
 
-      - name: 'Use gcloud CLI'
-        run: |
-          'gcloud info'
-          'gcloud projects list'
+      - name: Use gcloud CLI
+        run: gcloud info
+
+      - name: List gcloud Projects
+        run: gcloud projects list
 
   #     - name: Connect to GCP Secrets Manager
   #       run: echo 1
