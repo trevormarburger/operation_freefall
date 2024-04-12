@@ -1,12 +1,12 @@
 resource "google_storage_bucket" "bucket" {
-  name     = "gcf-code-bucket-202404-11"
+  name     = "gcf-code-bucket-202404-11-${var.env}"
   location = "US"
 }
 
 resource "google_storage_bucket_object" "archive" {
   name   = "index.zip"
   bucket = google_storage_bucket.bucket.name
-  source = "./path/to/zip/file/which/contains/code"
+  source = "/home/runner/work/operation_freefall/operation_freefall/src/my_function.zip"
 }
 
 resource "google_pubsub_topic" "my_topic" {
@@ -14,13 +14,13 @@ resource "google_pubsub_topic" "my_topic" {
 }
 
 resource "google_cloud_scheduler_job" "my_scheduler_job" {
-  name        = "my-scheduler-job"
+  name        = "my-scheduler-job-${var.env}"
   description = "My Cloud Scheduler job to trigger Cloud Function"
   schedule    = "0 10 * * 1-5"
   timezone    = "America/New_York"
 
   pubsub_target {
-    topic_name = "projects/${var.gcp_project_id}/topics/${google_pubsub_topic.my_topic.name}"
+    topic_name = "projects/${var.gcp_project_id}/topics/${google_pubsub_topic.my_topic.name}-${var.env}"
     data       = ""
   }
 
