@@ -79,6 +79,15 @@ def ts_delta(input_df, beg: int, end: int) -> float:
 
 
 def post_to_slack(deltas: Dict) -> None:
+    """Posts a message to a Slack channel containing daily, weekly, and monthly deltas.
+
+    Args:
+        deltas (Dict): A dictionary containing delta values for daily, weekly, and monthly data.
+
+    Returns:
+        None
+    """
+    
     slack_msg = f"""
     <https://www.google.com/finance/quote/DJT:NASDAQ?hl=en|*How's Donny Doin'?*>
 
