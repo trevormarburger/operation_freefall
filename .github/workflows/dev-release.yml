@@ -32,14 +32,7 @@ jobs:
           with:
             fetch-depth: 0
             
-        - name: Trigger Prod Workflow
-          uses: actions/github-script@v6
-          if: github.ref == 'refs/heads/main'
-          with:
-            github-token: ${{ secrets.GH_TOKEN }}
-            script: |
-              github.rest.actions.createWorkflowDispatch({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                workflow_id: 'prod-release.yml'
-              })
+        - name : Trigger Prod Workflow
+          run: gh workflow run prod-release.yml
+          env:
+            GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
