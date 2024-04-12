@@ -10,7 +10,6 @@ terraform {
     bucket         = "state-bucket-20240412"
     prefix         = "terraform/state/operation_freefall/${var.env}"
     project        = var.gcp_project_id
-    location       = "us"
   }
 }
 
