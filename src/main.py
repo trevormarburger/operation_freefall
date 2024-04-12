@@ -96,7 +96,7 @@ def post_to_slack(deltas: Dict) -> None:
         logging.error(f"Failed to post message to Slack: {response.text}")
 
 
-def main():
+def main(message, context) -> None:
     stock_data = make_request()
     df = build_df(stock_data)
 
@@ -107,6 +107,3 @@ def main():
     }
 
     post_to_slack(deltas)
-
-if __name__=="__main__":
-    main()
