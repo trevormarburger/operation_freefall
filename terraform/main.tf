@@ -17,7 +17,7 @@ resource "google_cloud_scheduler_job" "my_scheduler_job" {
   name        = "my-scheduler-job-${var.env}"
   description = "My Cloud Scheduler job to trigger Cloud Function"
   schedule    = "0 10 * * 1-5"
-  timezone    = "America/New_York"
+  time_zone    = "America/New_York"
 
   pubsub_target {
     topic_name = "projects/${var.gcp_project_id}/topics/${google_pubsub_topic.my_topic.name}-${var.env}"
