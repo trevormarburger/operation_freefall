@@ -1,3 +1,3 @@
 # Operation Freefall
 
-[![Dev Release](https://github.com/trevormarburger/operation_freefall/actions/workflows/dev-release.yml/badge.svg)](https://github.com/trevormarburger/operation_freefall/actions/workflows/dev-release.yml)
+[![Dev Release](https://github.com/trevormarburger/operation_freefall/actions/workflows/dev-release.yml/badge.svg)](https://github.com/trevormarburger/operation_freefall/actions/workflows/dev-release.yml)&nbsp;&nbsp;[![Prod Release](https://github.com/trevormarburger/operation_freefall/actions/workflows/prod-release.yml/badge.svg)](https://github.com/trevormarburger/operation_freefall/actions/workflows/prod-release.yml)
