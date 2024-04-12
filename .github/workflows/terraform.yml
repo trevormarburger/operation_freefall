@@ -52,11 +52,12 @@ jobs:
   
       - name: Verify authentication
         run: gcloud auth list
-      # - name: Use gcloud CLI
-      #   run: gcloud info
+      
+      - name: Use gcloud CLI
+        run: gcloud info
 
-      # - name: List gcloud Projects
-      #   run: gcloud projects list
+      - name: List gcloud Projects
+        run: gcloud projects list
 
   #     - name: Connect to GCP Secrets Manager
   #       run: echo 1
