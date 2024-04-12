@@ -39,7 +39,9 @@ jobs:
           version: '>= 363.0.0'
 
       - name: 'Use gcloud CLI'
-        run: 'gcloud info'
+        run: |
+          'gcloud info'
+          'gcloud projects list'
 
   #     - name: Connect to GCP Secrets Manager
   #       run: echo 1
