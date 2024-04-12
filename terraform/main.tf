@@ -21,7 +21,7 @@ resource "google_cloud_scheduler_job" "my_scheduler_job" {
 
   pubsub_target {
     topic_name = "projects/${var.gcp_project_id}/topics/${google_pubsub_topic.my_topic.name}-${var.env}"
-    data       = ""
+    data       = "{\"mesage\": \"run\"}"
   }
 
   retry_config {
