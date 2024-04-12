@@ -72,6 +72,8 @@ jobs:
         run: |
           terraform init \
             -var 'environment=${{ inputs.environment }}'
+            -backend-config="bucket=state-bucket-20240412" \
+            -backend-config="prefix=terraform/state/${{ inputs.environment }}"
 
       - name: Terraform Plan
         working-directory: terraform
