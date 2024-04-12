@@ -60,67 +60,96 @@ jobs:
           echo "TF_VAR_SLACK_WEBHOOK_URL=$slack_webhook_url" >> $GITHUB_ENV
           echo "TF_VAR_AV_API_KEY=$av_api_key" >> $GITHUB_ENV
 
-  #     - name: Setup Terraform
-  #       uses: hashicorp/setup-terraform@v2
-  #       with:
-  #         terraform_wrapper: false
-  #         terraform_version: ${{ env.TF_VAR_ENVIRONMENT }}
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_wrapper: false
+          terraform_version: ${{ env.TF_VAR_ENVIRONMENT }}
 
-  #     - name: Terraform Init
-  #       working-directory: terraform
-  #       shell: bash
-  #       run: |
-  #         terraform init \
-  #           -backend-config="" \
-  #           -backend-config=""
+      - name: Terraform Init
+        working-directory: terraform
+        shell: bash
+        run: |
+          terraform init \
+            -backend-configure="" \
+            -backend-configure=""
 
-  #     - name: Terraform Plan
-  #       working-directory: terraform
-  #       run: |
-  #         terraform plan \
-  #           -var 'environment=${{ inputs.environment }}'
+      - name: Terraform Plan
+        working-directory: terraform
+        run: |
+          terraform plan \
+            -var 'environment=${{ inputs.environment }}'
 
-  #     - name: Hold workflow for manual approval
-  #       if: ${{ always() }}
-  #       run: |
-  #         echo "Workflow is waiting for manual approval at Plan..."
+      - name: Hold workflow for manual approval
+        if: ${{ always() }}
+        run: |
+          echo "Workflow is waiting for manual approval at Plan..."
 
-  # apply:
-  #   needs: [plan]
-  #   runs-on: ubuntu-latest
-  #   environment: ${{ inputs.environment }}
-  #   env:
-  #     TF_VAR_ENVIRONMENT: ${{ inputs.environment }}
-  #   steps:
-  #     - uses: actions/checkout@v3
+  apply:
+    needs: [plan]
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment }}
+    env:
+      TF_VAR_ENVIRONMENT: ${{ inputs.environment }}
+    steps:
+      - uses: actions/checkout@v3
 
-  #     - name: Configure GCP Credentials
-  #       run: |
-  #         echo "${{ secrets.GCP_CREDENTIALS }}" > base_key
-  #         base64 --decode base_key > gcp_key.json
-  #         export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/gcp_key.json
+      - name: Zip Source Code
+        working-directory: src
+        run: |
+          zip -r my_function.zip .
+          ls -l my_function.zip
 
-  #     # TODO: Get Secrets
+      - name: Configure GCP Credentials
+        working-directory: terraform
+        run: |
+          echo "${{ secrets.GCP_CREDENTIALS }}" > base_key
+          base64 --decode base_key > gcp_key.json
+          export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/gcp_key.json
 
-  #     - name: Set TF Vars
-  #       run: echo pass
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          version: '>= 363.0.0'
 
-  #     - name: Setup Terraform
-  #       uses: hashicorp/setup-terraform@v2
-  #       with:
-  #         terraform_wrapper: false
-  #         terraform_version: ${{ env.TF_VERSION }}
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0.2.1
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: false
+  
+      - name: Activate service account
+        working-directory: terraform
+        run: |
+          gcloud auth activate-service-account --key-file=$(pwd)/gcp_key.json
+  
+      - name: Verify authentication
+        run: gcloud auth list
 
-  #     - name: Terraform Init
-  #       working-directory: terraform
-  #       shell: bash
-  #       run: |
-  #         terraform init \
-  #           -backend-config=""
+      - name: Set Environment Variables from GCP Secrets for TF
+        run: |
+          av_api_key=$(gcloud secrets versions access 1 --project=tm-personal-proj-1 --secret="av_api_key")
+          slack_webhook_url=$(gcloud secrets versions access 1 --project=tm-personal-proj-1 --secret="slack_webhook_url_${{ inputs.environment }}")
+          echo "TF_VAR_SLACK_WEBHOOK_URL=$slack_webhook_url" >> $GITHUB_ENV
+          echo "TF_VAR_AV_API_KEY=$av_api_key" >> $GITHUB_ENV
 
-  #     - name: Terraform Apply
-  #       working-directory: terraform
-  #       run: |
-  #         terraform apply \
-  #           -auto-approve \
-  #           -var 'environment=${{ inputs.environment }}'
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_wrapper: false
+          terraform_version: ${{ env.TF_VERSION }}
+
+      - name: Terraform Init
+        working-directory: terraform
+        shell: bash
+        run: |
+          terraform init \
+            -backend-config=""
+
+      - name: Terraform Apply
+        working-directory: terraform
+        run: |
+          terraform apply \
+            -auto-approve \
+            -var 'environment=${{ inputs.environment }}'

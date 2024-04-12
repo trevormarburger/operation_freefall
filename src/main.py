@@ -11,6 +11,7 @@ logging.basicConfig(level=logging.INFO)
 TICKER = "DJT"
 AV_API_KEY = os.getenv('AV_API_KEY')
 SLACK_WEBHOOK_URL = os.getenv("SLACK_WEBHOOK_URL")
+DONNY_SHARES = 80_000_000
 
 def make_request():
     url = f"https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol={TICKER}&apikey={AV_API_KEY}"
@@ -70,7 +71,7 @@ def ts_delta(input_df, beg: int, end: int) -> float:
     """
     delta = round(input_df.iloc[end].close - input_df.iloc[beg].close, 2)
     ret_dict = dict(
-        abs_val=abs(delta),
+        abs_val=abs(delta) * DONNY_SHARES,
         val_dir = "-" if delta < 0 else "",
         chart_dir = "downwards" if delta < 0 else "upwards"
     )
@@ -81,9 +82,9 @@ def post_to_slack(deltas: Dict) -> None:
     slack_msg = f"""
     <https://www.google.com/finance/quote/DJT:NASDAQ?hl=en|*How's Donny Doin'?*>
 
-    *Daily:* {deltas['daily']['val_dir']}${deltas['daily']['abs_val']} :chart_with_{deltas['daily']['chart_dir']}_trend:\n
-    *Weekly:* {deltas['weekly']['val_dir']}${deltas['weekly']['abs_val']} :chart_with_{deltas['weekly']['chart_dir']}_trend:\n
-    *Monthly:* {deltas['monthly']['val_dir']}${deltas['monthly']['abs_val']} :chart_with_{deltas['monthly']['chart_dir']}_trend:
+    *Daily:* {deltas['daily']['val_dir']}${deltas['daily']['abs_val']:,} :chart_with_{deltas['daily']['chart_dir']}_trend:\n
+    *Weekly:* {deltas['weekly']['val_dir']}${deltas['weekly']['abs_val']:,} :chart_with_{deltas['weekly']['chart_dir']}_trend:\n
+    *Monthly:* {deltas['monthly']['val_dir']}${deltas['monthly']['abs_val']:,} :chart_with_{deltas['monthly']['chart_dir']}_trend:
     """
     slack_payload = {
         "text": slack_msg

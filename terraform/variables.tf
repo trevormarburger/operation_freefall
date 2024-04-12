@@ -7,7 +7,7 @@ variable "env" {
 variable "gcp_project_id" {
     type = string
     description = "GCP Project ID."
-    default = ""
+    default = "tm-personal-proj-1"
 }
 
 variable "AV_API_KEY" {
@@ -18,9 +18,4 @@ variable "AV_API_KEY" {
 variable "SLACK_WEBHOOK_URL" {
   type        = string
   description = "Slack Webhook URL."
-}
-
-variable "GCP_CREDENTIALS" {
-  type = string
-  description = "GCP Credentials."
 }
