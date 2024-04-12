@@ -71,7 +71,7 @@ jobs:
         shell: bash
         run: |
           terraform init \
-            -var 'environment=${{ inputs.environment }}'
+            -var 'environment=${{ inputs.environment }}' \
             -backend-config="bucket=state-bucket-20240412" \
             -backend-config="prefix=terraform/state/${{ inputs.environment }}"
 
