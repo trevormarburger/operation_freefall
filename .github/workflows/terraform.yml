@@ -20,80 +20,87 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Zip Source Code
+        working-directory: src
+        run: |
+          zip -r my_function.zip .
+          ls -l my_function.zip
+
       - name: Configure GCP Credentials
+        working-directory: terraform
         run: |
           echo "${{ secrets.GCP_CREDENTIALS }}" > base_key
           base64 --decode base_key > gcp_key.json
           export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/gcp_key.json
 
-      - name: Connect to GCP Secrets Manager
-        run: echo 1
+  #     - name: Connect to GCP Secrets Manager
+  #       run: echo 1
 
-      - name: Set TF Vars
-        run: |
-          echo 1
+  #     - name: Set TF Vars
+  #       run: |
+  #         echo 1
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_wrapper: false
-          terraform_version: ${{ env.TF_VAR_ENVIRONMENT }}
+  #     - name: Setup Terraform
+  #       uses: hashicorp/setup-terraform@v2
+  #       with:
+  #         terraform_wrapper: false
+  #         terraform_version: ${{ env.TF_VAR_ENVIRONMENT }}
 
-      - name: Terraform Init
-        working-directory: terraform
-        shell: bash
-        run: |
-          terraform init \
-            -backend-config="" \
-            -backend-config=""
+  #     - name: Terraform Init
+  #       working-directory: terraform
+  #       shell: bash
+  #       run: |
+  #         terraform init \
+  #           -backend-config="" \
+  #           -backend-config=""
 
-      - name: Terraform Plan
-        working-directory: terraform
-        run: |
-          terraform plan \
-            -var 'environment=${{ inputs.environment }}'
+  #     - name: Terraform Plan
+  #       working-directory: terraform
+  #       run: |
+  #         terraform plan \
+  #           -var 'environment=${{ inputs.environment }}'
 
-      - name: Hold workflow for manual approval
-        if: ${{ always() }}
-        run: |
-          echo "Workflow is waiting for manual approval at Plan..."
+  #     - name: Hold workflow for manual approval
+  #       if: ${{ always() }}
+  #       run: |
+  #         echo "Workflow is waiting for manual approval at Plan..."
 
-  apply:
-    needs: [plan]
-    runs-on: ubuntu-latest
-    environment: ${{ inputs.environment }}
-    env:
-      TF_VAR_ENVIRONMENT: ${{ inputs.environment }}
-    steps:
-      - uses: actions/checkout@v3
+  # apply:
+  #   needs: [plan]
+  #   runs-on: ubuntu-latest
+  #   environment: ${{ inputs.environment }}
+  #   env:
+  #     TF_VAR_ENVIRONMENT: ${{ inputs.environment }}
+  #   steps:
+  #     - uses: actions/checkout@v3
 
-      - name: Configure GCP Credentials
-        run: |
-          echo "${{ secrets.GCP_CREDENTIALS }}" > base_key
-          base64 --decode base_key > gcp_key.json
-          export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/gcp_key.json
+  #     - name: Configure GCP Credentials
+  #       run: |
+  #         echo "${{ secrets.GCP_CREDENTIALS }}" > base_key
+  #         base64 --decode base_key > gcp_key.json
+  #         export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/gcp_key.json
 
-      # TODO: Get Secrets
+  #     # TODO: Get Secrets
 
-      - name: Set TF Vars
-        run: echo pass
+  #     - name: Set TF Vars
+  #       run: echo pass
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-        with:
-          terraform_wrapper: false
-          terraform_version: ${{ env.TF_VERSION }}
+  #     - name: Setup Terraform
+  #       uses: hashicorp/setup-terraform@v2
+  #       with:
+  #         terraform_wrapper: false
+  #         terraform_version: ${{ env.TF_VERSION }}
 
-      - name: Terraform Init
-        working-directory: terraform
-        shell: bash
-        run: |
-          terraform init \
-            -backend-config=""
+  #     - name: Terraform Init
+  #       working-directory: terraform
+  #       shell: bash
+  #       run: |
+  #         terraform init \
+  #           -backend-config=""
 
-      - name: Terraform Apply
-        working-directory: terraform
-        run: |
-          terraform apply \
-            -auto-approve \
-            -var 'environment=${{ inputs.environment }}'
+  #     - name: Terraform Apply
+  #       working-directory: terraform
+  #       run: |
+  #         terraform apply \
+  #           -auto-approve \
+  #           -var 'environment=${{ inputs.environment }}'

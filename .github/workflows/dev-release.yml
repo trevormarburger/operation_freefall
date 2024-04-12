@@ -13,14 +13,6 @@ jobs:
     test:
       runs-on: ubuntu-latest
       steps:
-        - name: Checkout Actions
-          uses: actions/checkout@v3
-          with:
-            fetch-depth: 0
-        - name: Show Tree
-          run: |
-            pwd
-            tree
 #   dev-release:
 #     uses: ./.github/workflows/terraform.yml
 #     with:
