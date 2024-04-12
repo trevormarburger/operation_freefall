@@ -32,7 +32,7 @@ resource "google_cloud_scheduler_job" "my_scheduler_job" {
 
 resource "google_cloudfunctions_function" "function" {
   name        = "operation-freefall-${var.env}"
-  description = "Operation Freefall Function"
+  description = "Operation Freefall Function - ${time_static.activation_date.unix}"
   runtime     = "python39"
 
   available_memory_mb          = 512
