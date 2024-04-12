@@ -10,7 +10,7 @@ data "archive_file" "function_archive" {
 }
 
 resource "google_storage_bucket_object" "archive" {
-  name                = format("%s#%s", var.bucket_archive_filepath, data.archive_file.function_archive.output_md5)
+  name                = format("%s#%s", "function.zip", data.archive_file.function_archive.output_md5)
   bucket              = var.bucket_name
   source              = data.archive_file.function_archive.output_path
   content_disposition = "attachment"
