@@ -161,4 +161,4 @@ jobs:
         run: |
           terraform apply \
             -auto-approve \
-            -var 'environment=${{ inputs.environment }}'
+            -var 'env=${{ inputs.environment }}'
