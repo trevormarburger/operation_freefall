@@ -78,7 +78,30 @@ def ts_delta(input_df, beg: int, end: int) -> float:
     return ret_dict
 
 
-def post_to_slack(deltas: Dict) -> None:
+def format_delta(df: pd.DataFrame) -> str:
+    """TODO"""
+    daily_pct_delta_num = round(((df.iloc[0]['close'] - df.iloc[1]['close']) / abs(df.iloc[1]['close'])) * 100, 2)
+    if daily_pct_delta_num > 0:
+        daily_pct_delta_str = f"+{abs(daily_pct_delta_num)}%"
+    elif daily_pct_delta_num < 0:
+        daily_pct_delta_str = f"-{abs(daily_pct_delta_num)}%"
+    else:
+        daily_pct_delta_str = f"{abs(daily_pct_delta_num)}%"
+
+    return daily_pct_delta_str
+
+
+def get_quote() -> str:
+    """TODO"""
+    td_url = "https://api.tronalddump.io/random/quote"
+    headers = {"Accept": "application/hal+json"}
+    resp = requests.get(td_url, headers=headers)
+    quote_val = resp.json().get('value')
+
+    return quote_val
+
+
+def post_to_slack(deltas: Dict, **kwargs) -> None:
     """Posts a message to a Slack channel containing daily, weekly, and monthly deltas.
 
     Args:
@@ -87,14 +110,19 @@ def post_to_slack(deltas: Dict) -> None:
     Returns:
         None
     """
-    
+
     slack_msg = f"""
     <https://www.google.com/finance/quote/DJT:NASDAQ?hl=en|*How's Donny Doin'?*>
 
-    *Daily:* {deltas['daily']['val_dir']}${deltas['daily']['abs_val']:,} :chart_with_{deltas['daily']['chart_dir']}_trend:\n
-    *Weekly:* {deltas['weekly']['val_dir']}${deltas['weekly']['abs_val']:,} :chart_with_{deltas['weekly']['chart_dir']}_trend:\n
-    *Monthly:* {deltas['monthly']['val_dir']}${deltas['monthly']['abs_val']:,} :chart_with_{deltas['monthly']['chart_dir']}_trend:
-    """
+`Daily ∆: {kwargs['daily_pct_delta']}`
+
+*Daily:* {deltas['daily']['val_dir']}${deltas['daily']['abs_val']:,} :chart_with_{deltas['daily']['chart_dir']}_trend:\n
+*Weekly:* {deltas['weekly']['val_dir']}${deltas['weekly']['abs_val']:,} :chart_with_{deltas['weekly']['chart_dir']}_trend:\n
+*Monthly:* {deltas['monthly']['val_dir']}${deltas['monthly']['abs_val']:,} :chart_with_{deltas['monthly']['chart_dir']}_trend:
+
+*Quote of the Day*
+> {kwargs['qotd']}
+"""
     slack_payload = {
         "text": slack_msg
     }
@@ -115,4 +143,4 @@ def main(message, context) -> None:
         "monthly": ts_delta(df, 30, 0)
     }
 
-    post_to_slack(deltas)
+    post_to_slack(deltas, daily_pct_delta=format_delta(df), qotd=get_quote())
