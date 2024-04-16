@@ -70,6 +70,7 @@ def ts_delta(input_df, beg: int, end: int) -> float:
                rounded to two decimal places.
     """
     delta = round(input_df.iloc[end].close - input_df.iloc[beg].close, 2)
+    delta = int(delta)
     ret_dict = dict(
         abs_val=abs(delta) * DONNY_SHARES,
         val_dir = "-" if delta < 0 else "",
