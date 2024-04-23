@@ -26,7 +26,7 @@ resource "google_cloud_scheduler_job" "my_scheduler_job" {
   name        = "my-scheduler-job-${var.env}"
   description = "Cloud Scheduler job to trigger Cloud Function for Operation Freefall."
   schedule    = "0 10 * * 1-5"
-  time_zone    = "America/New_York"
+  time_zone   = "America/New_York"
 
   pubsub_target {
     topic_name = "projects/${var.gcp_project_id}/topics/${google_pubsub_topic.my_topic.name}"
@@ -44,11 +44,13 @@ resource "google_cloudfunctions_function" "function" {
   description = "Operation Freefall Function"
   runtime     = "python39"
 
-  available_memory_mb          = 512
-  source_archive_bucket        = google_storage_bucket.bucket.name
-  source_archive_object        = google_storage_bucket_object.archive.name
-  timeout                      = 60
-  entry_point                  = "main"
+  available_memory_mb   = 512
+  source_archive_bucket = google_storage_bucket.bucket.name
+  source_archive_object = google_storage_bucket_object.archive.name
+  timeout               = 60
+  entry_point           = "main"
+  min_instances         = 0
+  max_instances         = 1
 
   labels = {
     environment = var.env
