@@ -80,20 +80,30 @@ def ts_delta(input_df, beg: int, end: int) -> float:
 
 
 def format_delta(df: pd.DataFrame) -> str:
-    """TODO"""
-    daily_pct_delta_num = round(((df.iloc[0]['close'] - df.iloc[1]['close']) / abs(df.iloc[1]['close'])) * 100, 2)
-    if daily_pct_delta_num > 0:
-        daily_pct_delta_str = f"+{abs(daily_pct_delta_num)}%"
-    elif daily_pct_delta_num < 0:
-        daily_pct_delta_str = f"-{abs(daily_pct_delta_num)}%"
-    else:
-        daily_pct_delta_str = f"{abs(daily_pct_delta_num)}%"
+    """Calculate the weekly percentage delta between the first and last rows in the input DataFrame.
 
-    return daily_pct_delta_str
+    Args:
+        df (DataFrame): The input DataFrame containing time series data.
+
+    Returns:
+        str: A formatted string representing the weekly percentage delta, rounded to two decimal places.
+    """
+    weekly_pct_delta_num = round(((df.iloc[0]['close'] - df.iloc[6]['close']) / abs(df.iloc[6]['close'])) * 100, 2)
+    if weekly_pct_delta_num > 0:
+        weekly_pct_delta_str = f"+{abs(weekly_pct_delta_num)}%"
+    elif weekly_pct_delta_num < 0:
+        weekly_pct_delta_str = f"-{abs(weekly_pct_delta_num)}%"
+    else:
+        weekly_pct_delta_str = f"{abs(weekly_pct_delta_num)}%"
+    return weekly_pct_delta_str
 
 
 def get_quote() -> str:
-    """TODO"""
+    """Retrieve a random quote from the Tronald Dump API.
+
+    Returns:
+        str: A random quote from the Tronald Dump API.
+    """
     td_url = "https://api.tronalddump.io/random/quote"
     headers = {"Accept": "application/hal+json"}
     resp = requests.get(td_url, headers=headers)
@@ -102,11 +112,8 @@ def get_quote() -> str:
     return quote_val
 
 
-def post_to_slack(deltas: Dict, **kwargs) -> None:
+def post_to_slack(**kwargs) -> None:
     """Posts a message to a Slack channel containing daily, weekly, and monthly deltas.
-
-    Args:
-        deltas (Dict): A dictionary containing delta values for daily, weekly, and monthly data.
 
     Returns:
         None
@@ -115,11 +122,7 @@ def post_to_slack(deltas: Dict, **kwargs) -> None:
     slack_msg = f"""
     <https://www.google.com/finance/quote/DJT:NASDAQ?hl=en|*How's Donny Doin'?*>
 
-`Daily ∆: {kwargs['daily_pct_delta']}`
-
-*Daily:* {deltas['daily']['val_dir']}${deltas['daily']['abs_val']:,} :chart_with_{deltas['daily']['chart_dir']}_trend:\n
-*Weekly:* {deltas['weekly']['val_dir']}${deltas['weekly']['abs_val']:,} :chart_with_{deltas['weekly']['chart_dir']}_trend:\n
-*Monthly:* {deltas['monthly']['val_dir']}${deltas['monthly']['abs_val']:,} :chart_with_{deltas['monthly']['chart_dir']}_trend:
+`Weekly ∆: {kwargs['weekly_pct_delta']}`
 
 *Quote of the Day*
 > {kwargs['qotd']}
@@ -137,11 +140,4 @@ def post_to_slack(deltas: Dict, **kwargs) -> None:
 def main(message, context) -> None:
     stock_data = make_request()
     df = build_df(stock_data)
-
-    deltas = {
-        "daily": ts_delta(df, 1, 0),
-        "weekly": ts_delta(df, 6, 0),
-        "monthly": ts_delta(df, 30, 0)
-    }
-
-    post_to_slack(deltas, daily_pct_delta=format_delta(df), qotd=get_quote())
+    post_to_slack(weekly_pct_delta=format_delta(df), qotd=get_quote())
