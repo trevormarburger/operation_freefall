@@ -5,9 +5,9 @@ variable "env" {
 }
 
 variable "gcp_project_id" {
-    type = string
-    description = "GCP Project ID."
-    default = "tm-personal-proj-1"
+  type        = string
+  description = "GCP Project ID."
+  default     = "tm-personal-proj-1"
 }
 
 variable "AV_API_KEY" {

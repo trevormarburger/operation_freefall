@@ -44,11 +44,13 @@ resource "google_cloudfunctions_function" "function" {
   description = "Operation Freefall Function"
   runtime     = "python39"
 
-  available_memory_mb          = 512
-  source_archive_bucket        = google_storage_bucket.bucket.name
-  source_archive_object        = google_storage_bucket_object.archive.name
-  timeout                      = 60
-  entry_point                  = "main"
+  available_memory_mb   = 512
+  source_archive_bucket = google_storage_bucket.bucket.name
+  source_archive_object = google_storage_bucket_object.archive.name
+  timeout               = 60
+  entry_point           = "main"
+  min_instances         = 0
+  max_instances         = 1
 
   labels = {
     environment = var.env
